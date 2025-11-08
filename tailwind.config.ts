@@ -4,9 +4,9 @@ import tailwindcssAnimate from "tailwindcss-animate";
 const config: Config = {
   darkMode: "class",
   content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
+    "./pages/**/*.{ts,tsx,js,jsx}",
+    "./components/**/*.{ts,tsx,js,jsx}",
+    "./app/**/*.{ts,tsx,js,jsx}",
   ],
   theme: {
     extend: {
@@ -16,6 +16,7 @@ const config: Config = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -45,6 +46,16 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+
+      borderColor: {
+        DEFAULT: "hsl(var(--border))",
+        border: "hsl(var(--border))", // 👈 allows `border-border`
+      },
+
+      outlineColor: {
+        ring: "hsl(var(--ring))", // 👈 allows `outline-ring` or `outline-ring/50`
+      },
+
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
