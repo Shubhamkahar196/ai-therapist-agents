@@ -1,120 +1,183 @@
-// Chat API functions for the AI therapist
-
-export interface ChatSession {
-  id: string;
-  userId: string;
-  title: string;
-  createdAt: Date;
-  updatedAt: Date;
-  messageCount: number;
-}
-
 export interface ChatMessage {
-  id: string;
-  sessionId: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   timestamp: Date;
+  metadata?: {
+    technique: string;
+    goal: string;
+    progress: any[];
+    analysis?: {
+      emotionalState: string;
+      themes: string[];
+      riskLevel: number;
+      recommendedApproach: string;
+      progressIndicators: string[];
+    };
+  };
 }
 
-// Mock data for demo purposes
-const mockChatSessions: ChatSession[] = [
-  {
-    id: "session-1",
-    userId: "default-user",
-    title: "Anxiety Management Session",
-    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
-    updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    messageCount: 12,
-  },
-  {
-    id: "session-2",
-    userId: "default-user",
-    title: "Stress Relief Techniques",
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-    updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-    messageCount: 8,
-  },
-  {
-    id: "session-3",
-    userId: "default-user",
-    title: "Building Confidence",
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // Yesterday
-    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-    messageCount: 15,
-  },
-];
+export interface ChatSession {
+  sessionId: string;
+  messages: ChatMessage[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export const getAllChatSessions = async (): Promise<ChatSession[]> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 300));
-
-  return mockChatSessions;
-};
-
-export const getChatSession = async (sessionId: string): Promise<ChatSession | null> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 300));
-
-  return mockChatSessions.find(session => session.id === sessionId) || null;
-};
-
-export const createChatSession = async (userId: string, title: string): Promise<ChatSession> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 300));
-
-  const newSession: ChatSession = {
-    id: `session-${Date.now()}`,
-    userId,
-    title,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    messageCount: 0,
+export interface ApiResponse {
+  message: string;
+  response?: string;
+  analysis?: {
+    emotionalState: string;
+    themes: string[];
+    riskLevel: number;
+    recommendedApproach: string;
+    progressIndicators: string[];
   };
+  metadata?: {
+    technique: string;
+    goal: string;
+    progress: any[];
+  };
+}
 
-  mockChatSessions.push(newSession);
-  return newSession;
+const API_BASE =
+  process.env.BACKEND_API_URL ||
+  "https://ai-therapist-agent-backend.onrender.com";
+
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  return {
+    "Content-Type": "application/json",
+    Authorization: token ? `Bearer ${token}` : "",
+  };
 };
 
-export const getChatMessages = async (sessionId: string): Promise<ChatMessage[]> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 300));
+export const createChatSession = async (): Promise<string> => {
+  try {
+    console.log("Creating new chat session...");
+    const response = await fetch(`${API_BASE}/chat/sessions`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+    });
 
-  // Mock messages for demo
-  return [
-    {
-      id: "msg-1",
-      sessionId,
-      role: "user",
-      content: "I'm feeling anxious about work today.",
-      timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
-    },
-    {
-      id: "msg-2",
-      sessionId,
-      role: "assistant",
-      content: "I understand that work anxiety can be challenging. Let's explore some techniques that might help you manage these feelings.",
-      timestamp: new Date(Date.now() - 29 * 60 * 1000), // 29 minutes ago
-    },
-  ];
+    if (!response.ok) {
+      const error = await response.json();
+      console.error("Failed to create chat session:", error);
+      throw new Error(error.error || "Failed to create chat session");
+    }
+
+    const data = await response.json();
+    console.log("Chat session created:", data);
+    return data.sessionId;
+  } catch (error) {
+    console.error("Error creating chat session:", error);
+    throw error;
+  }
 };
 
 export const sendChatMessage = async (
   sessionId: string,
-  content: string,
-  role: 'user' | 'assistant' = 'user'
-): Promise<ChatMessage> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
+  message: string
+): Promise<ApiResponse> => {
+  try {
+    console.log(`Sending message to session ${sessionId}:`, message);
+    const response = await fetch(
+      `${API_BASE}/chat/sessions/${sessionId}/messages`,
+      {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ message }),
+      }
+    );
 
-  const newMessage: ChatMessage = {
-    id: `msg-${Date.now()}`,
-    sessionId,
-    role,
-    content,
-    timestamp: new Date(),
-  };
+    if (!response.ok) {
+      const error = await response.json();
+      console.error("Failed to send message:", error);
+      throw new Error(error.error || "Failed to send message");
+    }
 
-  // In a real app, this would be saved to the database
-  return newMessage;
+    const data = await response.json();
+    console.log("Message sent successfully:", data);
+    return data;
+  } catch (error) {
+    console.error("Error sending chat message:", error);
+    throw error;
+  }
+};
+
+export const getChatHistory = async (
+  sessionId: string
+): Promise<ChatMessage[]> => {
+  try {
+    console.log(`Fetching chat history for session ${sessionId}`);
+    const response = await fetch(
+      `${API_BASE}/chat/sessions/${sessionId}/history`,
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error("Failed to fetch chat history:", error);
+      throw new Error(error.error || "Failed to fetch chat history");
+    }
+
+    const data = await response.json();
+    console.log("Received chat history:", data);
+
+    if (!Array.isArray(data)) {
+      console.error("Invalid chat history format:", data);
+      throw new Error("Invalid chat history format");
+    }
+
+    // Ensure each message has the correct format
+    return data.map((msg: any) => ({
+      role: msg.role,
+      content: msg.content,
+      timestamp: new Date(msg.timestamp),
+      metadata: msg.metadata,
+    }));
+  } catch (error) {
+    console.error("Error fetching chat history:", error);
+    throw error;
+  }
+};
+
+export const getAllChatSessions = async (): Promise<ChatSession[]> => {
+  try {
+    console.log("Fetching all chat sessions...");
+    const response = await fetch(`${API_BASE}/chat/sessions`, {
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error("Failed to fetch chat sessions:", error);
+      throw new Error(error.error || "Failed to fetch chat sessions");
+    }
+
+    const data = await response.json();
+    console.log("Received chat sessions:", data);
+
+    return data.map((session: any) => {
+      // Ensure dates are valid
+      const createdAt = new Date(session.createdAt || Date.now());
+      const updatedAt = new Date(session.updatedAt || Date.now());
+
+      return {
+        ...session,
+        createdAt: isNaN(createdAt.getTime()) ? new Date() : createdAt,
+        updatedAt: isNaN(updatedAt.getTime()) ? new Date() : updatedAt,
+        messages: (session.messages || []).map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp || Date.now()),
+        })),
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching chat sessions:", error);
+    throw error;
+  }
 };

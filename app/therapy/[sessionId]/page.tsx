@@ -63,7 +63,10 @@ interface ApiResponse {
   metadata: {
     technique: string;
     goal: string;
-    progress: any[];
+    progress: {
+      emotionalState: string;
+      riskLevel: number;
+    };
   };
 }
 
@@ -82,7 +85,6 @@ const glowAnimation = {
     transition: {
       duration: 3,
       repeat: Infinity,
-      ease: "easeInOut",
     },
   },
 };
@@ -511,7 +513,7 @@ export default function TherapyPage() {
         </div>
 
         {/* Main chat area */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-background rounded-lg border">
+        <div className="flex-1 flex flex-col overflow-hidden bg-background rounded-lg border">
           {/* Chat header */}
           <div className="p-4 border-b flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -551,7 +553,7 @@ export default function TherapyPage() {
                           <Sparkles className="w-6 h-6" />
                         </motion.div>
                       </div>
-                      <span className="bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent">
+                      <span className="bg-linear-to-r from-primary/90 to-primary bg-clip-text text-transparent">
                         AI Therapist
                       </span>
                     </div>
@@ -563,7 +565,7 @@ export default function TherapyPage() {
 
                 <div className="grid gap-3 relative">
                   <motion.div
-                    className="absolute -inset-4 bg-gradient-to-b from-primary/5 to-transparent blur-xl"
+                    className="absolute -inset-4 bg-linear-to-b from-primary/5 to-transparent blur-xl"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 }}
@@ -617,7 +619,7 @@ export default function TherapyPage() {
                             </div>
                           )}
                         </div>
-                        <div className="flex-1 space-y-2 overflow-hidden min-h-[2rem]">
+                        <div className="flex-1 space-y-2 overflow-hidden min-h-8">
                           <div className="flex items-center justify-between">
                             <p className="font-medium text-sm">
                               {msg.role === "assistant"
@@ -667,7 +669,7 @@ export default function TherapyPage() {
           )}
 
           {/* Input area */}
-          <div className="border-t bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/50 p-4">
+          <div className="border-t bg-background/50 backdrop-blur supports-backdrop-filter:bg-background/50 p-4">
             <form
               onSubmit={handleSubmit}
               className="max-w-3xl mx-auto flex gap-4 items-end relative"
@@ -683,7 +685,7 @@ export default function TherapyPage() {
                   }
                   className={cn(
                     "w-full resize-none rounded-2xl border bg-background",
-                    "p-3 pr-12 min-h-[48px] max-h-[200px]",
+                    "p-3 pr-12 min-h-12 max-h-[200px]",
                     "focus:outline-none focus:ring-2 focus:ring-primary/50",
                     "transition-all duration-200",
                     "placeholder:text-muted-foreground/70",
@@ -703,7 +705,7 @@ export default function TherapyPage() {
                   type="submit"
                   size="icon"
                   className={cn(
-                    "absolute right-1.5 bottom-3.5 h-[36px] w-[36px]",
+                    "absolute right-1.5 bottom-3.5 h-9 w-9",
                     "rounded-xl transition-all duration-200",
                     "bg-primary hover:bg-primary/90",
                     "shadow-sm shadow-primary/20",
