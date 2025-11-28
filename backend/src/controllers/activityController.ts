@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from "express";
-import { Activity, IActivity } from "../models/Activity";
+import type { Request, Response, NextFunction } from "express";
+import { Activity, IActivity } from "../models/Activity.js";
 import { logger } from "../utils/logger";
-import { sendActivityCompletionEvent } from "../utils/inngestEvents";
+import { sendActivityCompletionEvent } from "../utils/inngestEvents.js";
 
 // Log a new activity
 export const logActivity = async (

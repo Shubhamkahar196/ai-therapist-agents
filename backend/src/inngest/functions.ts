@@ -1,4 +1,4 @@
-import { inngest } from "../inngest/index.js";
+import { inngest } from "./client.js";
 import { functions as aiFunctions } from "./aiFunctions.js";
 
 // Export inngest for use in index.ts
