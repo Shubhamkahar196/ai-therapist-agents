@@ -8,13 +8,11 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "esnext",
+    "module": "node20",
     "target": "esnext",
-    "types": [],
-    // For nodejs:
-    // "lib": ["esnext"],
-    // "types": ["node"],
-    // and npm install -D @types/node
+    "moduleResolution": "node16",
+    "types": ["node"],
+    "lib": ["esnext"],
 
     // Other Outputs
     "sourceMap": true,

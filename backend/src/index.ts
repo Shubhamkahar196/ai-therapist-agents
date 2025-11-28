@@ -1,8 +1,12 @@
-
 import express from 'express'
 import type {Request, Response} from 'express'
-import { inngest, functions } from "./inngest/functions"
-import { logger } from "./utils/logger";
+import { inngest, functions } from "./inngest/functions.js"
+import { logger } from "./utils/logger.js";
+import { connectDB } from './utils/db.js';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 

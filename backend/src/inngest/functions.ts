@@ -1,11 +1,14 @@
-import { inngest } from "./client";
-import { functions as aiFunctions } from "./aiFunctions";
+import { inngest } from "../inngest/index.js";
+import { functions as aiFunctions } from "./aiFunctions.js";
+
+// Export inngest for use in index.ts
+export { inngest };
 
 // Function to handle therapy session events
 export const therapySessionHandler = inngest.createFunction(
   { id: "therapy-session-handler" },
   { event: "therapy/session.created" },
-  async ({ event, step }) => {
+  async ({ event, step }: { event: any; step: any }) => {
     // Log the session creation
     await step.run("log-session-creation", async () => {
       console.log("New therapy session created:", event.data);
@@ -40,7 +43,7 @@ export const therapySessionHandler = inngest.createFunction(
 export const moodTrackingHandler = inngest.createFunction(
   { id: "mood-tracking-handler" },
   { event: "mood/updated" },
-  async ({ event, step }) => {
+  async ({ event, step }: { event: any; step: any }) => {
     // Log the mood update
     await step.run("log-mood-update", async () => {
       console.log("Mood update received:", event.data);
@@ -75,7 +78,7 @@ export const moodTrackingHandler = inngest.createFunction(
 export const activityCompletionHandler = inngest.createFunction(
   { id: "activity-completion-handler" },
   { event: "activity/completed" },
-  async ({ event, step }) => {
+  async ({ event, step }: { event: any; step: any }) => {
     // Log the activity completion
     await step.run("log-activity-completion", async () => {
       console.log("Activity completed:", event.data);
