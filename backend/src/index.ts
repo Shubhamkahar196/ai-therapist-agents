@@ -3,12 +3,24 @@ import type {Request, Response} from 'express'
 import { inngest, functions } from "./inngest/functions.js"
 import { logger } from "./utils/logger.js";
 import { connectDB } from './utils/db.js';
-import dotenv from 'dotenv';
 
-// Load environment variables
+import  dotenv from "dotenv";
+import cors from 'cors'
+import helmet from 'helmet'
+import morgan from 'morgan'
+import authRoutes from './routes/auth.js'
+
 dotenv.config();
 
+
 const app = express();
+
+
+// middleware
+
+
+// parse json body
+app.use(express.json())
 
 app.get("/",(req:Request,res:Response)=>{
     res.send("Hello world");
