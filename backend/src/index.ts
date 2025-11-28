@@ -9,6 +9,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import morgan from 'morgan'
 import authRoutes from './routes/auth.js'
+import { errorHandler } from './middleware/errorHandler.js';
 
 dotenv.config();
 
@@ -17,14 +18,18 @@ const app = express();
 
 
 // middleware
-
+app.use(cors());
+app.use(helmet());
+app.use(morgan("dev"));
 
 // parse json body
 app.use(express.json())
 
-app.get("/",(req:Request,res:Response)=>{
-    res.send("Hello world");
-})
+// routes
+app.use("/auth",authRoutes);
+
+// error handling
+app.use(errorHandler)
 
 // Start server
 const startServer = async () => {
