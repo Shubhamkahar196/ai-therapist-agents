@@ -1,11 +1,12 @@
-import { TypeExpressionOperator } from "mongoose"; { Request, Response } from "express";
-import { ChatSession, IChatSession } from "../models/ChatSession";
+import type { Request, Response } from "express";
+import { ChatSession } from "../models/ChatSession.js";
+import type { IChatSession } from "../models/ChatSession.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { v4 as uuidv4 } from "uuid";
-import { logger } from "../utils/logger";
-import { inngest } from "../inngest/client";
-import { User } from "../models/User";
-import { InngestSessionResponse, InngestEvent } from "../types/inngest";
+import { logger } from "../utils/logger.js";
+import { inngest } from "../inngest/client.js";
+import { User } from "../models/User.js";
+import type { InngestSessionResponse, InngestEvent } from "../types/inngest.js";
 import { Types } from "mongoose";
 
 // Initialize Gemini API
@@ -66,7 +67,7 @@ export const sendMessage = async (req: Request, res: Response) => {
     logger.info("Processing message:", { sessionId, message });
 
     // Find session by sessionId
-    const session = await ChatSession.findOne({ sessionId });
+    const session = await ChatSession.findOne({ sessionId: sessionId! });
     if (!session) {
       logger.warn("Session not found:", { sessionId });
       return res.status(404).json({ message: "Session not found" });
@@ -235,6 +236,9 @@ export const getSessionHistory = async (req: Request, res: Response) => {
 export const getChatSession = async (req: Request, res: Response) => {
   try {
     const { sessionId } = req.params;
+    if (!sessionId) {
+      return res.status(400).json({ error: "Session ID is required" });
+    }
     logger.info(`Getting chat session: ${sessionId}`);
     const chatSession = await ChatSession.findOne({ sessionId });
     if (!chatSession) {
@@ -255,7 +259,7 @@ export const getChatHistory = async (req: Request, res: Response) => {
     const userId = new Types.ObjectId(req.user.id);
 
     // Find session by sessionId instead of _id
-    const session = await ChatSession.findOne({ sessionId });
+    const session = await ChatSession.findOne({ sessionId: sessionId! });
     if (!session) {
       return res.status(404).json({ message: "Session not found" });
     }

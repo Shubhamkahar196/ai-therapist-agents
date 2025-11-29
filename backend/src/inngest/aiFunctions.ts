@@ -1,7 +1,6 @@
 import { inngest } from "./client.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { logger } from "../utils/logger.js";
-import type { StringSchemaDefinition } from "mongoose";
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(

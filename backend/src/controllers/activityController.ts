@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
-import { Activity, IActivity } from "../models/Activity.js";
-import { logger } from "../utils/logger";
+import { Activity } from "../models/Activity.js";
+import type { IActivity } from "../models/Activity.js";
+import { logger } from "../utils/logger.js";
 import { sendActivityCompletionEvent } from "../utils/inngestEvents.js";
 
 // Log a new activity
