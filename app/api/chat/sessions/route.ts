@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const response = await fetch(`${BACKEND_API_URL}/chat/sessions`, {
+    const response = await fetch(`${BACKEND_API_URL || "https://ai-therapist-agent-backend-2-9kwl.onrender.com" }/chat/sessions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

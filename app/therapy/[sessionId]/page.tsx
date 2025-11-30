@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useSession } from "@/lib/contexts/session-context";
 import { Button } from "@/components/ui/button";
 import {
   Send,
@@ -94,6 +95,7 @@ const COMPLETION_THRESHOLD = 5;
 export default function TherapyPage() {
   const params = useParams();
   const router = useRouter();
+  const { user } = useSession();
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -111,6 +113,11 @@ export default function TherapyPage() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
 
   const handleNewSession = async () => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
     try {
       setIsLoading(true);
       const newSessionId = await createChatSession();
@@ -143,6 +150,11 @@ export default function TherapyPage() {
   // Initialize chat session and load history
   useEffect(() => {
     const initChat = async () => {
+      if (!user) {
+        router.push('/login');
+        return;
+      }
+
       try {
         setIsLoading(true);
         if (!sessionId || sessionId === "new") {
@@ -188,11 +200,13 @@ export default function TherapyPage() {
     };
 
     initChat();
-  }, [sessionId]);
+  }, [sessionId, user, router]);
 
   // Load all chat sessions
   useEffect(() => {
     const loadSessions = async () => {
+      if (!user) return;
+
       try {
         const allSessions = await getAllChatSessions();
         setSessions(allSessions);
@@ -202,7 +216,7 @@ export default function TherapyPage() {
     };
 
     loadSessions();
-  }, [messages]);
+  }, [messages, user]);
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -226,6 +240,11 @@ export default function TherapyPage() {
     console.log("Session ID:", sessionId);
     console.log("Is typing:", isTyping);
     console.log("Is chat paused:", isChatPaused);
+
+    if (!user) {
+      router.push('/login');
+      return;
+    }
 
     if (!currentMessage || isTyping || isChatPaused || !sessionId) {
       console.log("Submission blocked:", {
@@ -379,6 +398,11 @@ export default function TherapyPage() {
   };
 
   const handleSuggestedQuestion = async (text: string) => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
     if (!sessionId) {
       const newSessionId = await createChatSession();
       setSessionId(newSessionId);

@@ -327,8 +327,11 @@ export default function Dashboard() {
   // Add function to fetch daily stats
   const fetchDailyStats = useCallback(async () => {
     try {
-      // Fetch therapy sessions using the chat API
-      const sessions = await getAllChatSessions();
+      // Only fetch therapy sessions if user is authenticated
+      let sessions = [];
+      if (user) {
+        sessions = await getAllChatSessions();
+      }
 
       // Fetch today's activities
       const activitiesResponse = await fetch("/api/activities/today");

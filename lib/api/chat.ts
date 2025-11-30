@@ -41,15 +41,17 @@ export interface ApiResponse {
 }
 
 const API_BASE =
-  process.env.BACKEND_API_URL ||
-  "https://ai-therapist-agent-backend.onrender.com";
+  process.env.BACKEND_API_URL || "https://ai-therapist-agent-backend-2-9kwl.onrender.com";
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No authentication token found");
+  }
   return {
     "Content-Type": "application/json",
-    Authorization: token ? `Bearer ${token}` : "",
+    Authorization: `Bearer ${token}`,
   };
 };
 
