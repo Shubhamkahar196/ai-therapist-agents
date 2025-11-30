@@ -10,7 +10,6 @@ import {
   TrendingUp,
   Calendar,
   Activity,
-  Medal,
   Target,
   Smile,
   Frown,

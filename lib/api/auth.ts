@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export async function registerUser(name: string, email: string, password: string) {
   try {
@@ -9,7 +9,8 @@ export async function registerUser(name: string, email: string, password: string
     });
     return res.data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Registration Failed");
+    const axiosError = error as AxiosError;
+    throw new Error((axiosError.response?.data as any)?.message || "Registration Failed");
   }
 }
 
@@ -21,6 +22,7 @@ export async function loginUser(email: string, password: string) {
     });
     return res.data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Login Failed");
+    const axiosError = error as AxiosError;
+    throw new Error((axiosError.response?.data as any)?.message || "Login Failed");
   }
 }

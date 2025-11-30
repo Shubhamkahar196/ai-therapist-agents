@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Plus, X, Loader2 } from "lucide-react";
+
+import {  Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -50,7 +50,7 @@ export function ActivityLogger({
   const [duration, setDuration] = useState("");
   const [description, setDescription] = useState("");
   const { toast } = useToast();
-  const { user, isAuthenticated, loading } = useSession();
+  const {  isAuthenticated, loading } = useSession();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
