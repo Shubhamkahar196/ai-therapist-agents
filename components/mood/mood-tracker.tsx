@@ -194,7 +194,7 @@ export function MoodTracker() {
                     initial={{ height: 0 }}
                     animate={{ height: `${day.value}%` }}
                     transition={{ delay: index * 0.1 }}
-                    className={`w-8 rounded-full bg-gradient-to-t from-primary/20 to-primary/30 group-hover:from-primary/30 group-hover:to-primary/40 transition-all absolute bottom-0 left-1/2 -translate-x-1/2 ${
+                    className={`w-8 rounded-full bg-linear-to-t from-primary/20 to-primary/30 group-hover:from-primary/30 group-hover:to-primary/40 transition-all absolute bottom-0 left-1/2 -translate-x-1/2 ${
                       selectedDay === index ? "ring-2 ring-primary" : ""
                     }`}
                   >

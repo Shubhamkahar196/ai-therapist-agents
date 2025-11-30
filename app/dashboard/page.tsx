@@ -11,8 +11,6 @@ import {
   Heart,
   Trophy,
   Bell,
-  AlertCircle,
-  PhoneCall,
   Sparkles,
   MessageSquare,
   BrainCircuit,
@@ -20,6 +18,7 @@ import {
   X,
   Loader2,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -28,7 +27,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 import { Container } from "@/components/ui/container";
 import { cn } from "@/lib/utils";
 
@@ -48,7 +47,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   addDays,
   format,
@@ -139,7 +138,7 @@ const generateInsights = (activities: Activity[]) => {
   const insights: {
     title: string;
     description: string;
-    icon: any;
+    icon: LucideIcon;
     priority: "low" | "medium" | "high";
   }[] = [];
 
@@ -171,7 +170,7 @@ const generateInsights = (activities: Activity[]) => {
       insights.push({
         title: "Mood Change Detected",
         description:
-          "I've noticed a dip in your mood. Would you like to try some mood-lifting activities?",
+          "I&apos;ve noticed a dip in your mood. Would you like to try some mood-lifting activities?",
         icon: Heart,
         priority: "high",
       });
@@ -187,7 +186,7 @@ const generateInsights = (activities: Activity[]) => {
     if (dailyAverage >= 1) {
       insights.push({
         title: "Consistent Practice",
-        description: `You've been regularly engaging in mindfulness activities. This can help reduce stress and improve focus.`,
+        description: `You&apos;ve been regularly engaging in mindfulness activities. This can help reduce stress and improve focus.`,
         icon: Trophy,
         priority: "medium",
       });
@@ -212,7 +211,7 @@ const generateInsights = (activities: Activity[]) => {
   if (completionRate >= 80) {
     insights.push({
       title: "High Achievement",
-      description: `You've completed ${Math.round(
+      description: `You&apos;ve completed ${Math.round(
         completionRate
       )}% of your activities this week. Excellent commitment!`,
       icon: Trophy,
@@ -274,7 +273,7 @@ export default function Dashboard() {
     {
       title: string;
       description: string;
-      icon: any;
+      icon: LucideIcon;
       priority: "low" | "medium" | "high";
     }[]
   >([]);
@@ -282,10 +281,8 @@ export default function Dashboard() {
   // New states for activities and wearables
   const [activities, setActivities] = useState<Activity[]>([]);
   const [showMoodModal, setShowMoodModal] = useState(false);
-  const [showCheckInChat, setShowCheckInChat] = useState(false);
-  const [activityHistory, setActivityHistory] = useState<DayActivity[]>([]);
   const [showActivityLogger, setShowActivityLogger] = useState(false);
-  const [isSavingActivity, setIsSavingActivity] = useState(false);
+  const [showCheckInChat, setShowCheckInChat] = useState(false);
   const [isSavingMood, setIsSavingMood] = useState(false);
   const [dailyStats, setDailyStats] = useState<DailyStats>({
     moodScore: null,
@@ -295,52 +292,13 @@ export default function Dashboard() {
     lastUpdated: new Date(),
   });
 
-  // Add this function to transform activities into day activity format
-  const transformActivitiesToDayActivity = (
-    activities: Activity[]
-  ): DayActivity[] => {
-    const days: DayActivity[] = [];
-    const today = new Date();
 
-    // Create array for last 28 days
-    for (let i = 27; i >= 0; i--) {
-      const date = startOfDay(subDays(today, i));
-      const dayActivities = activities.filter((activity) =>
-        isWithinInterval(new Date(activity.timestamp), {
-          start: date,
-          end: addDays(date, 1),
-        })
-      );
-
-      // Determine activity level based on number of activities
-      let level: ActivityLevel = "none";
-      if (dayActivities.length > 0) {
-        if (dayActivities.length <= 2) level = "low";
-        else if (dayActivities.length <= 4) level = "medium";
-        else level = "high";
-      }
-
-      days.push({
-        date,
-        level,
-        activities: dayActivities.map((activity) => ({
-          type: activity.type,
-          name: activity.name,
-          completed: activity.completed,
-          time: format(new Date(activity.timestamp), "h:mm a"),
-        })),
-      });
-    }
-
-    return days;
-  };
 
   // Modify the loadActivities function to use a default user ID
   const loadActivities = useCallback(async () => {
     try {
       const userActivities = await getUserActivities("default-user");
       setActivities(userActivities);
-      setActivityHistory(transformActivitiesToDayActivity(userActivities));
     } catch (error) {
       console.error("Error loading activities:", error);
     }
@@ -540,7 +498,7 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Quick Actions Card */}
             <Card className="border-primary/10 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/10 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-primary/10 to-transparent" />
               <CardContent className="p-6 relative">
                 <div className="space-y-6">
                   <div className="flex items-center gap-3">
@@ -560,8 +518,8 @@ export default function Dashboard() {
                       variant="default"
                       className={cn(
                         "w-full justify-between items-center p-6 h-auto group/button",
-                        "bg-gradient-to-r from-primary/90 to-primary hover:from-primary hover:to-primary/90",
-                        "transition-all duration-200 group-hover:translate-y-[-2px]"
+                        "bg-linear-to-r from-primary/90 to-primary hover:from-primary hover:to-primary/90",
+                        "transition-all duration-200 group-hover:-translate-y-0.5"
                       )}
                       onClick={handleStartTherapy}
                     >
@@ -589,7 +547,7 @@ export default function Dashboard() {
                         className={cn(
                           "flex flex-col h-[120px] px-4 py-3 group/mood hover:border-primary/50",
                           "justify-center items-center text-center",
-                          "transition-all duration-200 group-hover:translate-y-[-2px]"
+                          "transition-all duration-200 group-hover:-translate-y-0.5"
                         )}
                         onClick={() => setShowMoodModal(true)}
                       >
@@ -609,7 +567,7 @@ export default function Dashboard() {
                         className={cn(
                           "flex flex-col h-[120px] px-4 py-3 group/ai hover:border-primary/50",
                           "justify-center items-center text-center",
-                          "transition-all duration-200 group-hover:translate-y-[-2px]"
+                          "transition-all duration-200 group-hover:-translate-y-0.5"
                         )}
                         onClick={handleAICheckIn}
                       >

@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {  NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // For client-side logout, we just return success
     // The actual token removal is handled on the client side

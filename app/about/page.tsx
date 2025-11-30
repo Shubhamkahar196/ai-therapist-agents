@@ -35,11 +35,11 @@ export default function AboutPage() {
         transition={{ duration: 0.5 }}
         className="text-center mb-20"
       >
-        <h1 className="text-4xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold mb-6 bg-linear-to-r from-primary to-primary/80 bg-clip-text text-transparent">
           About Aura3.0
         </h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          We're revolutionizing mental health support by combining cutting-edge
+          We&apos;re revolutionizing mental health support by combining cutting-edge
           AI technology with the security and transparency of blockchain.
         </p>
       </motion.div>
@@ -53,7 +53,7 @@ export default function AboutPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <Card className="p-6 text-center h-full bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <Card className="p-6 text-center h-full bg-card/50 backdrop-blur supports-backdrop-filter:bg-background/60">
               <div className="mb-4 flex justify-center">{mission.icon}</div>
               <h3 className="text-xl font-semibold mb-3">{mission.title}</h3>
               <p className="text-muted-foreground">{mission.description}</p>
