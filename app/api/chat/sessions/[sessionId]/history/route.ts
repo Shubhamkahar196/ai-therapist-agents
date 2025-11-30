@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const BACKEND_API_URL =
-  process.env.BACKEND_API_URL || "http://localhost:3001"
-//   "https://ai-therapist-agent-backend.onrender.com";
+  process.env.BACKEND_API_URL || "https://ai-therapist-agent-backend-2-9kwl.onrender.com"
+
 
 export async function GET(
   req: NextRequest,

@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const API_URL =
-    process.env.BACKEND_API_URL || "http://localhost:3001"
-    // "https://ai-therapist-agent-backend.onrender.com";
+    process.env.BACKEND_API_URL || "https://ai-therapist-agent-backend-2-9kwl.onrender.com"
+    
 
   try {
     const res = await fetch(`${API_URL}/auth/login`, {
