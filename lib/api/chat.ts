@@ -344,40 +344,79 @@ export const getChatHistory = async (
     throw error;
   }
 };
+// lib/api/chat.ts
+// (keep the top of your existing file — types, API_BASE, getAuthHeaders, etc.)
+// Replace only the getAllChatSessions export with this implementation.
 
 export const getAllChatSessions = async (): Promise<ChatSession[]> => {
   try {
     console.log("Fetching all chat sessions...");
     const response = await fetch(`${API_BASE}/chat/sessions`, {
       headers: getAuthHeaders(),
+      // include credentials if backend uses cookies (keeps options flexible)
+      credentials: "include",
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      console.error("Failed to fetch chat sessions:", error);
-      throw new Error(error.error || "Failed to fetch chat sessions");
+      // try to parse error body, but fall back gracefully
+      const errBody = await response.json().catch(() => ({}));
+      console.error("Failed to fetch chat sessions:", errBody);
+      throw new Error(errBody?.error || errBody?.message || `HTTP ${response.status}`);
     }
 
-    const data = await response.json();
+    const data = await response.json().catch(() => null);
     console.log("Received chat sessions:", data);
 
-    return data.map((session: any) => {
-      // Ensure dates are valid
-      const createdAt = new Date(session.createdAt || Date.now());
-      const updatedAt = new Date(session.updatedAt || Date.now());
+    // If backend returns an array directly
+    if (Array.isArray(data)) {
+      return data.map(normalizeSession);
+    }
 
-      return {
-        ...session,
-        createdAt: isNaN(createdAt.getTime()) ? new Date() : createdAt,
-        updatedAt: isNaN(updatedAt.getTime()) ? new Date() : updatedAt,
-        messages: (session.messages || []).map((msg: any) => ({
-          ...msg,
-          timestamp: new Date(msg.timestamp || Date.now()),
-        })),
-      };
-    });
+    // Handle typical wrapper shapes
+    if (data && Array.isArray(data.sessions)) {
+      return data.sessions.map(normalizeSession);
+    }
+    if (data && Array.isArray(data.data)) {
+      return data.data.map(normalizeSession);
+    }
+    if (data && Array.isArray(data.items)) {
+      return data.items.map(normalizeSession);
+    }
+
+    // If backend returns an object for a single session
+    if (data && data.session && Array.isArray(data.session.messages)) {
+      return [normalizeSession(data.session)];
+    }
+
+    // Unexpected shape — log and return empty array to avoid .map errors
+    console.warn("getAllChatSessions: unexpected response shape, returning empty array", data);
+    return [];
   } catch (error) {
     console.error("Error fetching chat sessions:", error);
     throw error;
   }
+};
+
+// Helper to convert various session shapes into ChatSession type
+const normalizeSession = (session: any): ChatSession => {
+  // tolerate different timestamp fields that may exist in DB model
+  const createdAtCandidate = session.createdAt || session.startTime || session.startedAt || session._createdAt;
+  const updatedAtCandidate = session.updatedAt || session.updated_at || session._updatedAt || Date.now();
+
+  const createdAt = new Date(createdAtCandidate || Date.now());
+  const updatedAt = new Date(updatedAtCandidate || Date.now());
+
+  return {
+    sessionId: session.sessionId || session._id || session.id || "",
+    messages: Array.isArray(session.messages)
+      ? session.messages.map((m: any) => ({
+          role: m.role || m.sender || "assistant",
+          content: m.content || m.text || "",
+          timestamp: new Date(m.timestamp || m.createdAt || Date.now()),
+          metadata: m.metadata || m.meta || undefined,
+        }))
+      : [],
+    createdAt: isNaN(createdAt.getTime()) ? new Date() : createdAt,
+    updatedAt: isNaN(updatedAt.getTime()) ? new Date() : updatedAt,
+  };
 };
